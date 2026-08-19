@@ -15,7 +15,7 @@ mongoose
   .connect(URI)
   .then(() => console.log("mongoDB Connected!"))
   .catch((err) => console.log("mongoDB ERROR!", err));
-
+// adding data to database
 app.post("/api/recipies", async (req, res) => {
   console.log("our Request ", req.body);
   const body = req.body;
@@ -37,6 +37,16 @@ app.post("/api/recipies", async (req, res) => {
       status: false,
     });
   }
+});
+//getting all data from the database
+app.get("/api/recipies", async (req, res) => {
+  const data = await recipiesModel.find();
+
+  res.json({
+    message: "all todo fetch",
+    data: data,
+    status: true,
+  });
 });
 
 app.listen(PORT, () =>
