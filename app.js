@@ -19,24 +19,24 @@ mongoose
 app.post("/api/recipies", async (req, res) => {
   console.log("our Request ", req.body);
   const body = req.body;
-  const {
-    title,
-    catgory,
-    prepTime,
-    difficulty,
-    description,
-    ingredients,
-    instructions,
-  } = body;
+  // const {
+  //   title,
+  //   catgory,
+  //   prepTime,
+  //   difficulty,
+  //   description,
+  //   ingredients,
+  //   instructions,
+  // } = body;
   try {
-    const createRecipie = await recipiesModel.create();
+    await recipiesModel.create(body);
+    res.json("request send successfully ");
   } catch (error) {
-    response.json({
+    res.json({
       message: error.message || "something went wrong",
       status: false,
     });
   }
-  res.json("request send successfully ");
 });
 
 app.listen(PORT, () =>
