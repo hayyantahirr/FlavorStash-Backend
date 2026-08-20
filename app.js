@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import recipiesModel from "./models/recipies.js";
 import cors from "cors";
 import chefModel from "./models/Chefs.js";
+import bcrypt from "bcryptjs";
 const app = express();
 app.use(express.json());
 //need explanation
@@ -116,18 +117,19 @@ app.post("/api/register", async (req, res) => {
         message: "Necessary Information is not fullfilled ",
         status: false,
       });
-      // verifying if user exists or not
-      const chefData = await chefModel.findOne(email);
-      if (chefData) {
-        res.json({
-          message: "User Already exists ",
-          status: false,
-        });
-      }
-      const hashPassword = await bcrypt.hash(password, 10);
-      console.log("hashed Pass", hashPassword);
-      
     }
+    // verifying if user exists or not
+    const chefData = await chefModel.findOne({ email });
+    if (chefData) {
+      res.json({
+        message: "User Already exists ",
+        status: false,
+      });
+    }
+    const hashPassword = await bcrypt.hash(password, 10);
+    console.log("hashed Pass", hashPassword);
+
+    res.send("register successful");
   } catch (error) {
     res.json({
       message: error.message || "something went wrong",
