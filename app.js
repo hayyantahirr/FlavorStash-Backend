@@ -2,11 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import recipiesModel from "./models/recipies.js";
+import cors from "cors"
 const app = express();
 app.use(express.json());
 //need explanation
 app.use(express.urlencoded({ extended: true }));
 dotenv.config();
+app.use(cors())
 //----
 
 const URI = process.env.MONGODB_URI;
