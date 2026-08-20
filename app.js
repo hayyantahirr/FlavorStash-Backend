@@ -108,6 +108,8 @@ app.delete("/api/recipies/:id", async (req, res) => {
 });
 
 // User Sign in and Register
+
+//     <========= REGISTER ========>
 app.post("/api/register", async (req, res) => {
   try {
     const { name, email, password, cuisine } = req.body;
@@ -129,7 +131,69 @@ app.post("/api/register", async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
     console.log("hashed Pass", hashPassword);
 
-    res.send("register successful");
+    const user = {
+      ...req.body,
+      password: hashPassword,
+    };
+    const saveUser = await chefModel.create(user);
+
+    res.json({
+      message: "USER Registration SUCCESSFULLY!",
+      status: true,
+    });
+  } catch (error) {
+    res.json({
+      message: error.message || "something went wrong",
+      status: false,
+    });
+  }
+});
+
+//     <========= Login ========>
+
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.json({
+        message: "Required fields are missing!",
+        status: false,
+      });
+      return;
+    }
+
+    const chefData = await chefModel.findOne({ email });
+    console.log("Chef Data ======>", chefData);
+
+    if (!chefData) {
+      res.json({
+        message: "User does not exist ",
+        status: false,
+      });
+      return;
+    }
+
+    const comparePass = await bcrypt.compare(password, chefData.password);
+    console.log(comparePass);
+
+    if (comparePass) {
+      res.json({
+        message: "USER LOGIN SUCCESSFULLY!",
+        status: true,
+        data: chefData,
+      });
+    } else {
+      res.json({
+        message: "email or password not match!",
+        status: false,
+      });
+      return;
+    }
+
+    res.json({
+      message: "USER Login SUCCESSFULLY!",
+      status: true,
+    });
   } catch (error) {
     res.json({
       message: error.message || "something went wrong",
