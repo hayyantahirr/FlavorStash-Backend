@@ -40,15 +40,57 @@ app.post("/api/recipies", async (req, res) => {
 });
 //getting all data from the database
 app.get("/api/recipies", async (req, res) => {
-  const data = await recipiesModel.find();
+  try {
+    const data = await recipiesModel.find();
 
-  res.json({
-    message: "all todo fetch",
-    data: data,
-    status: true,
-  });
+    res.json({
+      message: "all todo fetch",
+      data: data,
+      status: true,
+    });
+  } catch (error) {
+    res.json({
+      message: error.message || "something went wrong",
+      status: false,
+    });
+  }
 });
-
+app.put("/api/recipies/:id", async (req, res) => {
+  try {
+    const body = await req.body;
+    const recipiesID = req.params.id;
+    res.json({
+      message: "Single updated",
+      recipieID: recipiesID,
+      data: body,
+      status: true,
+    });
+    const updatedData = await recipiesModel.findByIdAndUpdate(recipiesID, body);
+    console.log(updatedData);
+  } catch (error) {
+    res.json({
+      message: error.message || "something went wrong",
+      status: false,
+    });
+  }
+});
+app.delete("/api/recipies/:id", async (req, res) => {
+  try {
+    const recipiesID = req.params.id;
+    res.json({
+      message: "Single deleted",
+      recipieID: recipiesID,
+      status: true,
+    });
+    const deletedData = await recipiesModel.findByIdAndDelete(recipiesID);
+    console.log(deletedData);
+  } catch (error) {
+    res.json({
+      message: error.message || "something went wrong",
+      status: false,
+    });
+  }
+});
 app.listen(PORT, () =>
   console.log(`server running on http://localhost:${PORT}`),
 );
