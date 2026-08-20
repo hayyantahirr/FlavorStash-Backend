@@ -15,5 +15,5 @@ const chefSchema = new mongoose.Schema({
   },
 });
 
-const recipiesModel = mongoose.model("chefs", chefSchema);
-export default recipiesModel;
+const chefModel = mongoose.model("chefs", chefSchema);
+export default chefModel;

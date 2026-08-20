@@ -2,13 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import recipiesModel from "./models/recipies.js";
-import cors from "cors"
+import cors from "cors";
+import chefModel from "./models/Chefs.js";
 const app = express();
 app.use(express.json());
 //need explanation
 app.use(express.urlencoded({ extended: true }));
 dotenv.config();
-app.use(cors())
+app.use(cors());
 //----
 
 const URI = process.env.MONGODB_URI;
@@ -17,6 +18,8 @@ mongoose
   .connect(URI)
   .then(() => console.log("mongoDB Connected!"))
   .catch((err) => console.log("mongoDB ERROR!", err));
+
+// Recipie CRUD Operations
 // adding data to database
 app.post("/api/recipies", async (req, res) => {
   console.log("our Request ", req.body);
@@ -43,13 +46,22 @@ app.post("/api/recipies", async (req, res) => {
 //getting all data from the database
 app.get("/api/recipies", async (req, res) => {
   try {
-    const data = await recipiesModel.find();
-
-    res.json({
-      message: "all todo fetch",
-      data: data,
-      status: true,
-    });
+    const id = req.query.recipieID;
+    if (!id) {
+      const data = await recipiesModel.find();
+      res.json({
+        message: "all recipie fetch",
+        data: data,
+        status: true,
+      });
+    } else {
+      const dataById = await recipiesModel.findById(id);
+      res.json({
+        message: "single recipie fetch",
+        data: dataById,
+        status: true,
+      });
+    }
   } catch (error) {
     res.json({
       message: error.message || "something went wrong",
@@ -86,6 +98,36 @@ app.delete("/api/recipies/:id", async (req, res) => {
     });
     const deletedData = await recipiesModel.findByIdAndDelete(recipiesID);
     console.log(deletedData);
+  } catch (error) {
+    res.json({
+      message: error.message || "something went wrong",
+      status: false,
+    });
+  }
+});
+
+// User Sign in and Register
+app.post("/api/register", async (req, res) => {
+  try {
+    const { name, email, password, cuisine } = req.body;
+    // Form Validation
+    if (!name || !email || !password) {
+      res.json({
+        message: "Necessary Information is not fullfilled ",
+        status: false,
+      });
+      // verifying if user exists or not
+      const chefData = await chefModel.findOne(email);
+      if (chefData) {
+        res.json({
+          message: "User Already exists ",
+          status: false,
+        });
+      }
+      const hashPassword = await bcrypt.hash(password, 10);
+      console.log("hashed Pass", hashPassword);
+      
+    }
   } catch (error) {
     res.json({
       message: error.message || "something went wrong",
