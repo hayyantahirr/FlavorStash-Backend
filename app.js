@@ -5,6 +5,7 @@ import recipiesModel from "./models/recipies.js";
 import cors from "cors";
 import chefModel from "./models/Chefs.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 const app = express();
 app.use(express.json());
 //need explanation
@@ -153,7 +154,7 @@ app.post("/api/register", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, _id } = req.body;
     if (!email || !password) {
       res.json({
         message: "Required fields are missing!",
@@ -177,23 +178,28 @@ app.post("/api/login", async (req, res) => {
     console.log(comparePass);
 
     if (comparePass) {
-      res.json({
+      const jwtToken = await jwt.sign(
+        {
+          _id: chefData._id,
+          chef: chefData.name,
+        },
+        process.env.JWT_SECRET,
+      );
+      console.log("the token ", jwtToken);
+
+      return res.json({
         message: "USER LOGIN SUCCESSFULLY!",
         status: true,
+        token: jwtToken,
         data: chefData,
       });
     } else {
-      res.json({
+      return res.json({
         message: "email or password not match!",
         status: false,
       });
       return;
     }
-
-    res.json({
-      message: "USER Login SUCCESSFULLY!",
-      status: true,
-    });
   } catch (error) {
     res.json({
       message: error.message || "something went wrong",
