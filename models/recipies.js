@@ -4,11 +4,14 @@ const recipiesSchema = new mongoose.Schema({
   title: {
     type: String,
   },
-  catgory: {
+  category: {
+    type: String,
+  },
+  image: {
     type: String,
   },
   prepTime: {
-    type: String,
+    type: Number,
   },
   difficulty: {
     type: String,
